@@ -198,7 +198,6 @@ All hyperparameters in `configs/config.yaml`:
 | `ranking` | `hidden_dims` | [256,128,64] | Deep MLP layers |
 | `faiss` | `top_n` | 50 | Retrieval candidates |
 | `data` | `history_len` | 20 | Last-K items for user tower |
-| `data` | `props_chunk_size` | 200000 | Chunk size for item properties |
 
 ---
 
