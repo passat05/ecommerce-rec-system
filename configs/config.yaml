@@ -1,0 +1,81 @@
+data:
+  # ── Raw files (Retailrocket Kaggle dataset) ────────────────────────────────
+  raw_path:              "data/raw"
+  events_path:           "data/raw/events.csv"
+  item_props_part1_path: "data/raw/item_properties_part1.csv"
+  item_props_part2_path: "data/raw/item_properties_part2.csv"
+  category_tree_path:    "data/raw/category_tree.csv"
+
+  # ── Memory-safe loading ────────────────────────────────────────────────────
+  # events.csv ~2.7M rows; safe to load whole but chunk props files (~800MB)
+  props_chunk_size: 200_000
+
+  # ── Processed artefacts ───────────────────────────────────────────────────
+  processed_path:      "data/processed"
+  train_path:          "data/processed/train.parquet"
+  val_path:            "data/processed/val.parquet"
+  test_path:           "data/processed/test.parquet"
+  item_meta_path:      "data/processed/item_meta.parquet"   # item features
+  user_history_path:   "data/processed/user_history.parquet" # last-K items per user
+
+  # ── ID maps ────────────────────────────────────────────────────────────────
+  user_id_map_path:    "data/processed/user_id_map.json"
+  item_id_map_path:    "data/processed/item_id_map.json"
+  category_map_path:   "data/processed/category_map.json"
+
+  # ── Embeddings (item: .npy  |  user: .npy with memmap at inference) ────────
+  user_embeddings_path: "data/processed/user_embeddings.npy"
+  item_embeddings_path: "data/processed/item_embeddings.npy"
+
+  min_interactions: 3          # drop cold users
+  history_len: 20              # last-K items for user tower input
+
+# ── Two-Tower retrieval ────────────────────────────────────────────────────
+retrieval:
+  embedding_dim: 64
+  hidden_dims: [256, 128]      # shared for both towers
+  dropout: 0.2
+  learning_rate: 0.001
+  batch_size: 2048
+  epochs: 10
+  temperature: 0.07            # InfoNCE temperature
+  num_negatives: 50            # in-batch negatives per positive
+  model_path: "retrieval/two_tower.pt"
+
+# ── FAISS index ─────────────────────────────────────────────────────────────
+faiss:
+  index_path: "faiss_index/item_index.faiss"
+  top_n: 50
+
+# ── DeepFM ranking ──────────────────────────────────────────────────────────
+ranking:
+  model: "deepfm"
+  embedding_dim: 16            # field embedding dim for FM interactions
+  hidden_dims: [256, 128, 64]
+  dropout: 0.3
+  learning_rate: 0.001
+  batch_size: 64               # number of USERS per batch (LambdaRank: each sample = 1 user)
+  epochs: 10
+  max_items_per_user: 50       # cap item list per user in LambdaRank dataset
+  # batch_size: 4096
+  # epochs: 10
+  model_path: "ranking/deepfm.pt"
+
+# ── Categorical features for DeepFM ─────────────────────────────────────────
+cat_features:
+  - category_id
+  - event_type    # most recent event type on this item for this user
+
+num_features:
+  - price_bucket  # 0–9 quantile bucket
+  - recency_days  # days since last interaction
+  - n_views       # total views of item in train set
+
+evaluation:
+  k_values: [5, 10, 20]
+  results_path: "evaluation/results"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  top_k: 10
