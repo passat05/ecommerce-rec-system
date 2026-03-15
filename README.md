@@ -2,6 +2,7 @@
 
 End-to-end production-ready recommendation system for the **Retailrocket** e-commerce dataset.  
 Uses **Two-Tower Neural Retrieval** + **FAISS ANN Search** + **DeepFM Ranking**.
+Pipeline: DuckDB preprocessing → Two-Tower Neural Retrieval → FAISS ANN Search → DeepFM + LambdaRank Ranking → FastAPI serving.
 
 ---
 
@@ -44,9 +45,9 @@ Retailrocket CSVs                              POST /recommend {user_id}
 | Component | Detail |
 |-----------|--------|
 | Fields    | 7 fields: category_id, event_type, price_bucket, recency_bucket, popularity_bucket, user_emb_proj, item_emb_proj |
-| FM part   | Efficient order-2 feature interactions (no manual cross-engineering) |
-| Deep part | MLP 256→128→64→1 with BatchNorm + Dropout |
-| Output    | Sigmoid probability of purchase |
+| FM part   | Efficient order-2 feature interactions |
+| Deep part | MLP 256→128→64→1 with LayerNorm + Dropout |
+| Output    | Sigmoid score for ranking |
 
 ---
 
