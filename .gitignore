@@ -1,0 +1,6 @@
+*.npy
+*.pt
+*.faiss
+*.parquet
+data/
+models/
