@@ -1,7 +1,7 @@
 # E-commerce Recommendation System
 
 End-to-end production-ready recommendation system for the **Retailrocket** e-commerce dataset.  
-Uses **Two-Tower Neural Retrieval** + **FAISS ANN Search** + **DeepFM Ranking**.
+Uses **Two-Tower Neural Retrieval** + **FAISS ANN Search** + **DeepFM Ranking**.  
 Pipeline: DuckDB preprocessing → Two-Tower Neural Retrieval → FAISS ANN Search → DeepFM + LambdaRank Ranking → FastAPI serving.
 
 ---
